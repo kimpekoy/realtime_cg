@@ -1,0 +1,49 @@
+# depslib dependency file v1.0
+1382941419 source:c:\users\administrator\desktop\opengl_ex2\glut_example.cpp
+	<vector>
+	<iostream>
+	<fstream>
+	<cmath>
+	<windows.h>
+	<sys/time.h>
+	<GLUT/glut.h>
+	<OpenGL/glu.h>
+	<GL/glut.h>
+	<GL/glu.h>
+	<time.h>
+	<math.h>
+
+1382940988 c:\users\administrator\desktop\opengl_ex2\include\gl\glut.h
+	<windows.h>
+	<GL/gl.h>
+	<GL/glu.h>
+
+1382940988 c:\users\administrator\desktop\opengl_ex2\include\gl\gl.h
+
+1382940988 c:\users\administrator\desktop\opengl_ex2\include\gl\glu.h
+	<GL/gl.h>
+
+1440399668 source:d:\document\cu3\realtime cg\opengl_codeblock\opengl_ex2\glut_example.cpp
+	<vector>
+	<iostream>
+	<fstream>
+	<cmath>
+	<windows.h>
+	<sys/time.h>
+	<GLUT/glut.h>
+	<OpenGL/glu.h>
+	<GL/glut.h>
+	<GL/glu.h>
+	<time.h>
+	<math.h>
+
+1382940990 d:\document\cu3\realtime cg\opengl_codeblock\opengl_ex2\include\gl\glut.h
+	<windows.h>
+	<GL/gl.h>
+	<GL/glu.h>
+
+1382940990 d:\document\cu3\realtime cg\opengl_codeblock\opengl_ex2\include\gl\gl.h
+
+1382940990 d:\document\cu3\realtime cg\opengl_codeblock\opengl_ex2\include\gl\glu.h
+	<GL/gl.h>
+
