@@ -114,6 +114,34 @@ void setPixel(int x, int y, GLfloat r, GLfloat g, GLfloat b) {
 	glVertex2f(x+0.5, y+0.5);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+//   ////////  ///////   ///////   //   //   //////   //   //   //////   ////    /////
+//      //     //   //   //   //   //// //   ///      //   //   //  //   //  //  ///
+//      //     //   //   //   //   // ////      ///   ///////   //////   //  //  ///
+//      //     ///////   ///////   //  ///   //////   //   //   //  //   ////    /////
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+int shade = 3;
+
+float cutColor(float x) {
+    float y = 100.0f/shade;
+    if((x*100.0f)/y - floor((x*100.0f)/y)>=0.48&&(x*100.0f)/y - floor((x*100.0f)/y)<=0.52)
+        return 0.7*x;
+    return ((x*100.0f)/y - floor((x*100.0f)/y) >= 0.5 ? ceil((x*100.0f)/y):floor((x*100.0f)/y) )*y/100.0f;
+}
+
+vec3 toonShading(vec3 v,vec3 pos) {
+    vec3 tmp = vec3(cutColor(v.x),cutColor(v.y),cutColor(v.z));
+
+    if(0 <= pos.normalize().z && pos.normalize().z <= 0.2)
+        tmp = 0.2 * tmp;
+
+//    if(abs(v.x - tmp.x) >= 0.3)
+//        tmp = 0.2 * tmp;
+
+    return tmp;
+}
+
 vec3 computeShadedColor(vec3 pos) {
 	// TODO: Your shading code mostly go here
 
@@ -131,6 +159,7 @@ vec3 computeShadedColor(vec3 pos) {
         vec3 spc = vec3(material.ks.r*lc.r,material.ks.g*lc.g,material.ks.b*lc.b)*pow(max(r*v,0.0f),material.sp);
         sum += amb + dif + spc;
     }
+    sum = toonShading(sum,pos);
     return  sum;
 }
 //****************************************************
