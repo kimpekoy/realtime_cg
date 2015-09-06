@@ -3,6 +3,7 @@
 #################
 
 *.o
+*.exe
 *.depend
 *.cbp
 *.layout
