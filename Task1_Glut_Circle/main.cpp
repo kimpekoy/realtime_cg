@@ -211,10 +211,11 @@ vector<vector<vector<float>>> computeBitMap(int iwidth, int iheight) {
 //****************************************************
 // Write BMP to file
 //****************************************************
-void drawbmp(char* filename, int WIDTH, int HEIGHT) {
+void drawbmp(string fileName, int WIDTH, int HEIGHT) {
 
-    unsigned int headers[13];
-    FILE * outfile;
+    ofstream ofs;
+    ofs.open(fileName);
+
     int extrabytes;
     int paddedsize;
     int x; int y; int n;
@@ -222,7 +223,7 @@ void drawbmp(char* filename, int WIDTH, int HEIGHT) {
 
     vector<vector<vector<float>>> bmap = computeBitMap(WIDTH, HEIGHT);
 
-    printf("BMP calculated\n");
+    cout<<"BMP calculated\n";
 
     extrabytes = 4 - ((WIDTH * 3) % 4);                 // How many bytes of padding to add to each
                                                         // horizontal line - the size of which must
@@ -233,61 +234,28 @@ void drawbmp(char* filename, int WIDTH, int HEIGHT) {
     paddedsize = ((WIDTH * 3) + extrabytes) * HEIGHT;
 
     // Headers...
-    // Note that the "BM" identifier in bytes 0 and 1 is NOT included in these "headers".
 
-    headers[0]  = paddedsize + 54;      // bfSize (whole file size)
-    headers[1]  = 0;                    // bfReserved (both)
-    headers[2]  = 54;                   // bfOffbits
-    headers[3]  = 40;                   // biSize
-    headers[4]  = WIDTH;  // biWidth
-    headers[5]  = HEIGHT; // biHeight
+    BITMAPFILEHEADER bmfh;
+    bmfh.bfType = 0x4d42;
+    bmfh.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + paddedsize;
+    bmfh.bfReserved1 = 0;
+    bmfh.bfReserved2 = 0;
+    bmfh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
 
-    // Would have biPlanes and biBitCount in position 6, but they're shorts.
-    // It's easier to write them out separately (see below) than pretend
-    // they're a single int, especially with endian issues...
+    BITMAPINFOHEADER bmih;
+    memset(&bmih,0,40);
+    bmih.biSize = sizeof(BITMAPINFOHEADER);
+    bmih.biWidth = WIDTH;
+    bmih.biHeight = HEIGHT;
+    bmih.biPlanes = 1;
+    bmih.biBitCount = 24;
+    bmih.biCompression = 0;
+    bmih.biSizeImage = paddedsize;
 
-    headers[7]  = 0;                    // biCompression
-    headers[8]  = paddedsize;           // biSizeImage
-    headers[9]  = 0;                    // biXPelsPerMeter
-    headers[10] = 0;                    // biYPelsPerMeter
-    headers[11] = 0;                    // biClrUsed
-    headers[12] = 0;                    // biClrImportant
+    ofs.write((char*)(&bmfh),sizeof(BITMAPFILEHEADER));
+    ofs.write((char*)(&bmih),sizeof(BITMAPINFOHEADER));
 
-    outfile = fopen(filename, "wb");
-
-    //
-    // Headers begin...
-    // When printing ints and shorts, we write out 1 character at a time to avoid endian issues.
-    //
-
-    fprintf(outfile, "BM");
-
-    for (n = 0; n <= 5; n++)
-    {
-       fprintf(outfile, "%c", headers[n] & 0x000000FF);
-       fprintf(outfile, "%c", (headers[n] & 0x0000FF00) >> 8);
-       fprintf(outfile, "%c", (headers[n] & 0x00FF0000) >> 16);
-       fprintf(outfile, "%c", (headers[n] & (unsigned int) 0xFF000000) >> 24);
-    }
-
-    // These next 4 characters are for the biPlanes and biBitCount fields.
-
-    fprintf(outfile, "%c", 1);
-    fprintf(outfile, "%c", 0);
-    fprintf(outfile, "%c", 24);
-    fprintf(outfile, "%c", 0);
-
-    for (n = 7; n <= 12; n++)
-    {
-       fprintf(outfile, "%c", headers[n] & 0x000000FF);
-       fprintf(outfile, "%c", (headers[n] & 0x0000FF00) >> 8);
-       fprintf(outfile, "%c", (headers[n] & 0x00FF0000) >> 16);
-       fprintf(outfile, "%c", (headers[n] & (unsigned int) 0xFF000000) >> 24);
-    }
-
-    //
     // Headers done, now write the data...
-    //
 
     for (y = HEIGHT - 1; y >= 0; y--)     // BMP image format is written from bottom to top...
     {
@@ -304,24 +272,17 @@ void drawbmp(char* filename, int WIDTH, int HEIGHT) {
 
           // Also, it's written in (b,g,r) format...
 
-          fprintf(outfile, "%c", blue);
-          fprintf(outfile, "%c", green);
-          fprintf(outfile, "%c", red);
+          ofs<<(char)blue<<(char)green<<(char)red;
        }
        if (extrabytes)      // See above - BMP lines must be of lengths divisible by 4.
-       {
           for (n = 1; n <= extrabytes; n++)
-          {
-             fprintf(outfile, "%c", 0);
-          }
-       }
+              ofs<<(char)0;
     }
 
-    fclose(outfile);
+    ofs.close();
 
-    printf("BMP file: %s created!\n", filename);
+    cout<<"BMP file: "<<fileName<<" created!\n";
 
-    return;
 }
 //****************************************************
 // function that does the actual drawing of stuff
